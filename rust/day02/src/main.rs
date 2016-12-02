@@ -40,7 +40,7 @@ fn main() {
     let mut p1 = 5;
     let mut p2_cur = (0, 2); // start at the coordinate of '5'
 
-    let keypad: HashMap<(i8, i8), char> = P2_KEYPAD.iter().map(|&i| i).collect();
+    let keypad: HashMap<(i8, i8), char> = P2_KEYPAD.iter().cloned().collect();
     let step = |(x1, y1), (x2, y2)| (x1 + x2, y1 + y2);
 
     let stdin = io::stdin();
@@ -55,7 +55,7 @@ fn main() {
             }
         }
         part1.push(char::from_digit(p1, 10).unwrap());
-        part2.push(*keypad.get(&p2_cur).unwrap());
+        part2.push(keypad[&p2_cur]);
     }
 
     println!("part1: {}", part1);
