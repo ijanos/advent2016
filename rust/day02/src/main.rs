@@ -15,36 +15,48 @@ fn part1_next(n: u32, d: char) -> u32 {
 // i feel dirty
 fn part2_next(n: char, d: char) -> char {
     match d {
-        'U' => match n {
-            '3' => '1',
-            '6' | '7' | '8' => char::from_digit(n.to_digit(10).unwrap() - 4, 10).unwrap(),
-            'A' => '6',
-            'B' => '7',
-            'C' => '8',
-            'D' => 'B',
-            _ => n
-         },
-        'D' => match n {
-            '1' => '3',
-            '2' | '3' | '4' => char::from_digit(n.to_digit(10).unwrap() + 4, 10).unwrap(),
-            '6' => 'A',
-            '7' => 'B',
-            '8' => 'C',
-            'B' => 'D',
-            _ => n,
-        },
-        'L' => match n {
-            '3' | '4' | '6' | '7' | '8' | '9' => char::from_digit(n.to_digit(10).unwrap() - 1, 10).unwrap(),
-            'B' => 'A',
-            'C' => 'B',
-            _ => n
-        },
-        'R' => match n {
-            '2' | '3' | '5' | '6' | '7' | '8' => char::from_digit(n.to_digit(10).unwrap() + 1, 10).unwrap(),
-            'A' => 'B',
-            'B' => 'C',
-            _ => n,
-        },
+        'U' => {
+            match n {
+                '3' => '1',
+                '6' | '7' | '8' => char::from_digit(n.to_digit(10).unwrap() - 4, 10).unwrap(),
+                'A' => '6',
+                'B' => '7',
+                'C' => '8',
+                'D' => 'B',
+                _ => n,
+            }
+        }
+        'D' => {
+            match n {
+                '1' => '3',
+                '2' | '3' | '4' => char::from_digit(n.to_digit(10).unwrap() + 4, 10).unwrap(),
+                '6' => 'A',
+                '7' => 'B',
+                '8' => 'C',
+                'B' => 'D',
+                _ => n,
+            }
+        }
+        'L' => {
+            match n {
+                '3' | '4' | '6' | '7' | '8' | '9' => {
+                    char::from_digit(n.to_digit(10).unwrap() - 1, 10).unwrap()
+                }
+                'B' => 'A',
+                'C' => 'B',
+                _ => n,
+            }
+        }
+        'R' => {
+            match n {
+                '2' | '3' | '5' | '6' | '7' | '8' => {
+                    char::from_digit(n.to_digit(10).unwrap() + 1, 10).unwrap()
+                }
+                'A' => 'B',
+                'B' => 'C',
+                _ => n,
+            }
+        }
         _ => panic!("invalid input"),
     }
 }
