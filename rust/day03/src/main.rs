@@ -21,13 +21,13 @@ impl Triplets {
 
     fn push_triplet(&mut self, a: u32, b: u32, c: u32) {
         let valid_triangle =
-            |ref v: &Vec<u32>| v[0] + v[1] > v[2] && v[0] + v[2] > v[1] && v[1] + v[2] > v[0];
+            |v: &Vec<u32>| v[0] + v[1] > v[2] && v[0] + v[2] > v[1] && v[1] + v[2] > v[0];
         for &mut (ref mut column, n) in &mut [(&mut self.column1, a),
                                               (&mut self.column2, b),
                                               (&mut self.column3, c)] {
             column.push(n);
             if column.len() == 3 {
-                if valid_triangle(&column) {
+                if valid_triangle(column) {
                     self.triangles += 1;
                 }
                 column.clear();
