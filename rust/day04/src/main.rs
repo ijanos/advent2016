@@ -2,10 +2,19 @@ use std::io;
 use std::io::prelude::*;
 use std::collections::HashMap;
 
+fn decode_name(name: &str) -> String {
+    let id: String = name.chars().filter(|&c| c.is_numeric()).collect();
+    let id = id.parse::<u32>().unwrap();
+    let rotate = |c: char, n| ((c as u32 - 97 + n) % 26 + 97) as u8 as char;
+    name.chars()
+        .filter(|&c| !c.is_numeric())
+        .map(|c| if c == '-' { ' ' } else { rotate(c, id) })
+        .collect()
+}
+
 fn main() {
     let mut letters = HashMap::<char, i32>::new();
     let mut sum = 0;
-
     let stdin = io::stdin();
     let stdin = stdin.lock().lines();
     for line in stdin {
@@ -23,6 +32,9 @@ fn main() {
             let id: String = name.chars().filter(|&c| c.is_numeric()).collect();
             let id = id.parse::<u32>().unwrap();
             sum += id;
+            if decode_name(name) == "northpole object storage " {
+                println!("part2: {}", id);
+            }
         }
         letters.clear();
     }
