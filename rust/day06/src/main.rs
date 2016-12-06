@@ -18,28 +18,10 @@ fn main() {
         }
     }
     let part1: String = counts.iter()
-        .map(|hm| {
-            hm.into_iter().fold(('_', 0), |(c1, max), (&c2, &count)| if count > max {
-                (c2, count)
-            } else {
-                (c1, max)
-            })
-
-        })
-        .map(|(c, _)| c)
+        .map(|hm| *hm.into_iter().max_by_key(|&(_, n)| n).unwrap().0)
         .collect();
-
     let part2: String = counts.iter()
-        .map(|hm| {
-            hm.into_iter().fold(('_', std::u32::MAX),
-                                |(c1, min), (&c2, &count)| if count < min {
-                                    (c2, count)
-                                } else {
-                                    (c1, min)
-                                })
-
-        })
-        .map(|(c, _)| c)
+        .map(|hm| *hm.into_iter().min_by_key(|&(_, n)| n).unwrap().0)
         .collect();
     println!("{:?}", part1);
     println!("{:?}", part2);
