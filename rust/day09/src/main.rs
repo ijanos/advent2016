@@ -1,65 +1,42 @@
 use std::io;
 use std::io::prelude::*;
 
-#[derive(Debug)]
-enum State {
-    Copy,
-    Command,
-    Collect(u32, u32),
+fn parse_command(text: &[u8]) -> (usize, usize) {
+    let text = std::str::from_utf8(&text[1..text.len() - 1]).unwrap();
+    let command: Vec<_> = text.split('x').map(|n| n.parse::<usize>().unwrap()).collect();
+    (command[0], command[1])
+}
+
+fn count(text: &[u8], part1: bool) -> usize {
+    if text.contains(&b'(') {
+        let open = text.iter().position(|&c| c == b'(').unwrap();
+        let (front, tail) = text.split_at(open);
+        let close = tail.iter().position(|&c| c == b')').unwrap();
+        let (command, tail) = tail.split_at(close + 1);
+        let (size, repeats) = parse_command(command);
+        let (repeated, tail) = tail.split_at(size);
+        if part1 {
+            front.len() + repeats * size + count(tail, part1)
+        } else {
+            front.len() + repeats * count(repeated, part1) + count(tail, part1)
+        }
+    } else {
+        text.len()
+    }
 }
 
 fn main() {
-    use State::*;
-
     let mut part1 = 0;
+    let mut part2 = 0;
 
     let stdin = io::stdin();
     let stdin = stdin.lock().lines();
     for line in stdin {
         let line = line.unwrap();
-
-        let mut output = String::new();
-        let mut command = String::new();
-        let mut repeat = String::new();
-        let mut state = Copy;
-
-        for chr in line.chars() {
-            match state {
-                Copy => {
-                    if chr == '(' {
-                        state = Command;
-                    } else {
-                        output.push(chr)
-                    }
-                }
-                Command => {
-                    if chr == ')' {
-                        let tmp: Vec<_> =
-                            command.split('x').map(|n| n.parse::<u32>().unwrap()).collect();
-                        let (chars, repeat) = (tmp[0], tmp[1]);
-                        state = Collect(chars, repeat);
-                        command.clear();
-                    } else {
-                        command.push(chr);
-                    }
-                }
-                Collect(n, r) => {
-                    repeat.push(chr);
-                    state = if n - 1 == 0 {
-                        for _ in 0..r {
-                            output.push_str(&repeat);
-                        }
-                        repeat.clear();
-                        Copy
-                    } else {
-                        Collect(n - 1, r)
-                    }
-
-                }
-            }
-        }
-        part1 += output.len();
+        part1 += count(line.as_bytes(), true);
+        part2 += count(line.as_bytes(), false);
     }
-    println!("part 1: {}", part1);
-}
 
+    println!("part 1: {}", part1);
+    println!("part 2: {}", part2);
+}
