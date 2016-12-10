@@ -28,6 +28,8 @@ fn main() {
     let input = stdin.lock().lines().map(|line| line.unwrap()).collect::<Vec<String>>();
 
     let mut bots = HashMap::<u32, Bot>::new();
+    let mut outputs = HashMap::<u32, u32>::new();
+
     for desc in input.iter().filter(|&line| line.starts_with("bot")) {
         let desc: Vec<_> = desc.split_whitespace().collect();
         let bot_id: u32 = desc[1].parse().unwrap();
@@ -49,20 +51,28 @@ fn main() {
         bots.get_mut(&bot).unwrap().data.push(chip);
     }
 
-    'main: loop {
+    loop {
         let mut new_data: Vec<(u32, u32)> = Vec::new();
+        if let (Some(a), Some(b), Some(c)) = (outputs.get(&0), outputs.get(&1), outputs.get(&2)) {
+            println!("part 2: {}", a * b * c);
+            break;
+        }
+
         for (id, bot) in bots.iter_mut().filter(|&(_, ref bot)| bot.data.len() == 2) {
             bot.data.sort();
             if bot.data[0] == 17 && bot.data[1] == 61 {
-                println!("part1: {}", id);
-                break 'main;
+                println!("part 1: {}", id);
             }
-            if let Node::Bot(id) = bot.low {
-                new_data.push((id, bot.data[0]));
+            let mut forward = |node, value| match node {
+                &Node::Bot(id) => {
+                    new_data.push((id, value));
+                }
+                &Node::Output(id) => {
+                    outputs.insert(id, value);
+                }
             };
-            if let Node::Bot(id) = bot.high {
-                new_data.push((id, bot.data[1]));
-            }
+            forward(&bot.low, bot.data[0]);
+            forward(&bot.high, bot.data[1]);
             bot.data.clear();
         }
         for &(id, value) in &new_data {
