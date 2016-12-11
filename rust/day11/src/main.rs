@@ -135,21 +135,7 @@ fn steps(current_floor: u32, layout: &Vec<Item>) -> Vec<(Vec<Item>, u32)> {
     possible_layouts
 }
 
-fn main() {
-    use ItemType::*;
-
-    // puzzle input state
-    let start_layout = vec![Item::new(Generator, "polonium", 0),
-                            Item::new(Generator, "thulium", 0),
-                            Item::new(Microchip, "thulium", 0),
-                            Item::new(Generator, "promethium", 0),
-                            Item::new(Generator, "ruthenium", 0),
-                            Item::new(Microchip, "ruthenium", 0),
-                            Item::new(Generator, "cobalt", 0),
-                            Item::new(Microchip, "cobalt", 0),
-                            Item::new(Microchip, "polonium", 1),
-                            Item::new(Microchip, "promethium", 1)];
-
+fn solve(start_layout: Vec<Item>) {
     let mut layouts = steps(0, &start_layout);
     let mut cache: HashSet<(Vec<Item>, u32)> = HashSet::new();
     cache.insert((start_layout, 0));
@@ -161,8 +147,8 @@ fn main() {
             let new_steps = steps(floor, &layout);
             for new_layout in new_steps {
                 if done(&new_layout.0) {
-                    println!("part 1: {}", stepcount);
-                    std::process::exit(0);
+                    println!("result: {}", stepcount);
+                    return;
                 }
                 if !cache.contains(&new_layout) {
                     cache.insert(new_layout.clone());
@@ -172,4 +158,36 @@ fn main() {
         }
         layouts = next;
     }
+}
+
+fn main() {
+    use ItemType::*;
+
+    let part1_layout = vec![Item::new(Generator, "polonium", 0),
+                            Item::new(Generator, "thulium", 0),
+                            Item::new(Microchip, "thulium", 0),
+                            Item::new(Generator, "promethium", 0),
+                            Item::new(Generator, "ruthenium", 0),
+                            Item::new(Microchip, "ruthenium", 0),
+                            Item::new(Generator, "cobalt", 0),
+                            Item::new(Microchip, "cobalt", 0),
+                            Item::new(Microchip, "polonium", 1),
+                            Item::new(Microchip, "promethium", 1)];
+
+    let part2_layout = vec![Item::new(Generator, "polonium", 0),
+                            Item::new(Generator, "thulium", 0),
+                            Item::new(Microchip, "thulium", 0),
+                            Item::new(Generator, "promethium", 0),
+                            Item::new(Generator, "ruthenium", 0),
+                            Item::new(Microchip, "ruthenium", 0),
+                            Item::new(Generator, "cobalt", 0),
+                            Item::new(Microchip, "cobalt", 0),
+                            Item::new(Microchip, "elerium", 0),
+                            Item::new(Generator, "elerium", 0),
+                            Item::new(Microchip, "dilithium", 0),
+                            Item::new(Generator, "dilithium", 0),
+                            Item::new(Microchip, "polonium", 1),
+                            Item::new(Microchip, "promethium", 1)];
+    //solve(part1_layout);
+    solve(part2_layout);
 }
