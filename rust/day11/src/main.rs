@@ -53,10 +53,6 @@ fn valid_layout(items: &Vec<Item>) -> bool {
         .all(|&i| valid_floor(&items.iter().filter(|&item| item.floor == i).collect::<Vec<_>>()))
 }
 
-fn done(items: &Vec<Item>) -> bool {
-    items.iter().all(|i| i.floor == 3)
-}
-
 fn steps(current_floor: u32, layout: &Vec<Item>) -> Vec<(Vec<Item>, u32)> {
     let mut possible_layouts = Vec::new();
 
@@ -66,10 +62,35 @@ fn steps(current_floor: u32, layout: &Vec<Item>) -> Vec<(Vec<Item>, u32)> {
         .filter(|&(_, ref item)| item.floor == current_floor)
         .collect::<Vec<_>>();
 
-    // possible single item moves
+    let mut try_single = true;
+
+    // possible double up moves
+    if current_floor != 3 {
+        for (i1, i2) in items.iter().tuple_combinations() {
+            let &(i1, _) = i1;
+            let &(i2, _) = i2;
+            let new = layout.iter()
+                .enumerate()
+                .map(|(j, ref item)| if j == i1 || j == i2 {
+                    Item::new(item.what, item.compatible, item.floor + 1)
+                } else {
+                    Item::new(item.what, item.compatible, item.floor)
+                })
+                .collect::<Vec<Item>>();
+            if valid_layout(&new) {
+                try_single = false;
+                possible_layouts.push((new, current_floor + 1));
+            }
+        }
+    }
+
+    let items_on_0 = layout.iter().filter(|&item| item.floor == 0).count() != 0;
+    let items_on_1 = layout.iter().filter(|&item| item.floor == 1).count() != 0;
+    let try_down = current_floor != 0 || current_floor == 1 && items_on_0 || current_floor == 2 && (items_on_0 || items_on_1);
+
     for &(i, _) in &items {
         // down
-        if current_floor != 0 {
+        if try_down {
             let new = layout.iter()
                 .enumerate()
                 .map(|(j, ref item)| if i == j {
@@ -83,8 +104,8 @@ fn steps(current_floor: u32, layout: &Vec<Item>) -> Vec<(Vec<Item>, u32)> {
             }
         }
 
-        // up
-        if current_floor != 3 {
+        // only move one thing up if could not move double items
+        if current_floor != 3 && try_single {
             let new = layout.iter()
                 .enumerate()
                 .map(|(j, ref item)| if i == j {
@@ -99,47 +120,18 @@ fn steps(current_floor: u32, layout: &Vec<Item>) -> Vec<(Vec<Item>, u32)> {
         }
     }
 
-    // possible double moves
-    for (i1, i2) in items.iter().tuple_combinations() {
-        let &(i1, _) = i1;
-        let &(i2, _) = i2;
-        if current_floor != 3 {
-            let new = layout.iter()
-                .enumerate()
-                .map(|(j, ref item)| if j == i1 || j == i2 {
-                    Item::new(item.what, item.compatible, item.floor + 1)
-                } else {
-                    Item::new(item.what, item.compatible, item.floor)
-                })
-                .collect::<Vec<Item>>();
-            if valid_layout(&new) {
-                possible_layouts.push((new, current_floor + 1));
-            }
-        }
 
-        if current_floor != 0 {
-            let new = layout.iter()
-                .enumerate()
-                .map(|(j, ref item)| if j == i1 || j == i2 {
-                    Item::new(item.what, item.compatible, item.floor - 1)
-                } else {
-                    Item::new(item.what, item.compatible, item.floor)
-                })
-                .collect::<Vec<Item>>();
-            if valid_layout(&new) {
-                possible_layouts.push((new, current_floor - 1));
-            }
-        }
-    }
 
     possible_layouts
 }
 
 fn solve(start_layout: Vec<Item>) {
-    let mut layouts = steps(0, &start_layout);
+    //let mut layouts = steps(0, &start_layout);
+    let mut layouts = vec![(start_layout.clone(), 0)];
     let mut cache: HashSet<(Vec<Item>, u32)> = HashSet::new();
     cache.insert((start_layout, 0));
-    let mut stepcount = 1;
+    let mut stepcount = 0;
+    let done = |items: &Vec<Item>| items.iter().all(|i| i.floor == 3);
     loop {
         stepcount += 1;
         let mut next = Vec::new();
@@ -188,6 +180,6 @@ fn main() {
                             Item::new(Generator, "dilithium", 0),
                             Item::new(Microchip, "polonium", 1),
                             Item::new(Microchip, "promethium", 1)];
-    //solve(part1_layout);
+    solve(part1_layout);
     solve(part2_layout);
 }
