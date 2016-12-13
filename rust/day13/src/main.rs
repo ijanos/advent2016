@@ -22,8 +22,16 @@ fn main() {
 
     let mut steps = 0;
     let mut wave = vec![start];
+
+    let part1;
+
     loop {
         steps += 1;
+
+        if steps == 51 {
+            println!("part 2: {}", visited.len());
+        }
+
         let mut next_wave = Vec::new();
         for (x, y) in wave {
             if !is_wall(x+1, y) && !visited.contains(&(x+1, y)) {
@@ -40,7 +48,7 @@ fn main() {
             }
         }
         if next_wave.contains(&goal) {
-            println!("{}", steps);
+            part1 = steps;
             break;
         }
 
@@ -50,4 +58,5 @@ fn main() {
 
         wave = next_wave
     }
+    println!("part 1: {}", part1);
 }
