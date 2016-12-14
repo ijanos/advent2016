@@ -2,11 +2,17 @@ extern crate crypto;
 
 use crypto::md5::Md5;
 use crypto::digest::Digest;
-
-const INPUT: &'static str = "jlmsuwbz";
 use std::collections::VecDeque;
 
+const INPUT: &'static str = "jlmsuwbz";
+
+
 fn main() {
+    println!("part 1: {}", solve(false));
+    println!("part 2: {}", solve(true));
+}
+
+fn solve(part2: bool) -> usize {
     let mut hasher = Md5::new();
     let mut hashes: VecDeque<(usize, String)> = VecDeque::with_capacity(1000);
     let mut i = 0;
@@ -15,7 +21,15 @@ fn main() {
         if hashes.len() < 1000 {
             hasher.reset();
             hasher.input_str(&format!("{}{}", INPUT, i));
-            hashes.push_back((i, hasher.result_str().to_owned()));
+            let mut md5 = hasher.result_str().to_owned();
+            if part2 {
+                for _ in 0..2016 {
+                    hasher.reset();
+                    hasher.input_str(&md5);
+                    md5 = hasher.result_str().to_owned();
+                }
+            }
+            hashes.push_back((i, md5));
             i += 1;
         } else {
             let (i, h) = hashes.pop_front().unwrap();
@@ -34,8 +48,7 @@ fn main() {
                 }) {
                     key_i += 1;
                     if key_i == 64 {
-                        println!("part 1: {}", i);
-                        break;
+                        return i;
                     }
                 }
             }
