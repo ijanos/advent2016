@@ -1,7 +1,8 @@
 const INPUT: &'static str = "01111001100111011";
 const PART1_LENGTH: usize = 272;
+const PART2_LENGTH: usize = 35651584;
 
-fn main() {
+fn dragon_checksum(data: &str, disk_size: usize) -> String {
     let expand = |mut data: String| {
         let b = data.chars().rev().map(|c| if c == '1' { '0' } else { '1' }).collect::<String>();
         data.push('0');
@@ -16,17 +17,22 @@ fn main() {
             .collect::<String>()
     };
 
-    let mut data: String = INPUT.into();
-    while data.len() < PART1_LENGTH {
+    let mut data: String = data.into();
+    while data.len() < disk_size {
         data = expand(data);
     }
 
-    data.truncate(PART1_LENGTH);
+    data.truncate(disk_size);
     let mut checksum = calc_checksum(&data);
 
     while checksum.len() % 2 == 0 {
         checksum = calc_checksum(&checksum);
     }
 
-    println!("part 1: {}", checksum);
+    checksum
+}
+
+fn main() {
+    println!("part 1: {}", dragon_checksum(INPUT, PART1_LENGTH));
+    println!("part 2: {}", dragon_checksum(INPUT, PART2_LENGTH));
 }
