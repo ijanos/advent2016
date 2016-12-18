@@ -26,6 +26,7 @@ fn main() {
     let start: State = (0, 0, "".into());
 
     let mut states = vec![start];
+    let mut wins = Vec::<String>::new();
 
     loop {
         let mut new_states = Vec::new();
@@ -58,10 +59,15 @@ fn main() {
         }
         for &(x, y, ref p) in &new_states {
             if  x == 3 && y == 3 {
-                println!("part 1: {}", p);
-                return;
+                wins.push(p.clone());
             }
         }
-        states = new_states;
+        states = new_states.into_iter().filter(|&(x, y, _)| !(x == 3 && y == 3)).collect();
+        if states.is_empty() {
+            break;
+        }
     }
+
+    println!("part 1: {}", wins[0]);
+    println!("part 2: {}", wins.iter().max_by_key(|p| p.len()).unwrap().len());
 }
