@@ -24,4 +24,6 @@ pub fn main() {
             break;
         }
     }
+    let part2 = blacklist.iter().filter(|&ip| !ip).count();
+    println!("part 2: {}", part2);
 }
