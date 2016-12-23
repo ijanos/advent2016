@@ -49,11 +49,12 @@ fn toggle(ins: Instruction) -> Instruction {
     }
 }
 
-fn run(cpu: &mut HashMap<char, isize>, program: &mut Vec<Instruction>) -> isize {
+fn run(cpu: &mut HashMap<char, isize>, program: &Vec<Instruction>) -> isize {
     use Input::*;
     use Instruction::*;
 
     let mut pc: isize = 0;
+    let mut program = program.clone();
 
     loop {
         let ins = program[pc as usize];
@@ -116,6 +117,7 @@ fn main() {
         let instruction: Instruction = line.parse().unwrap();
         program.push(instruction);
     }
+    let program = program;
 
     let mut cpu = HashMap::<char, isize>::new();
 
@@ -123,7 +125,15 @@ fn main() {
     cpu.insert('b', 0);
     cpu.insert('c', 0);
     cpu.insert('d', 0);
-    let part1 = run(&mut cpu, &mut program);
+    let part1 = run(&mut cpu, &program);
 
     println!("part 1: {}", part1);
+
+    cpu.insert('a', 12);
+    cpu.insert('b', 0);
+    cpu.insert('c', 0);
+    cpu.insert('d', 0);
+    let part2 = run(&mut cpu, &program);
+
+    println!("part 2: {}", part2);
 }
